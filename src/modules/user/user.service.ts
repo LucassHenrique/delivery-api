@@ -8,7 +8,6 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   create(data: CreateUserDto) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return this.prisma.user.create({ data });
   }
 
@@ -25,7 +24,6 @@ export class UserService {
   update(id: number, data: UpdateUserDto) {
     return this.prisma.user.update({
       where: { id },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       data,
     });
   }

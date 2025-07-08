@@ -24,6 +24,7 @@ model Product {
   id             Int              @id @default(autoincrement())
   name           String
   price          Float
+  description String?
   OrderToProduct OrderToProduct[]
 }
 
@@ -31,7 +32,7 @@ model Order {
   id             Int              @id @default(autoincrement())
   userId         Int
   user           User             @relation(fields: [userId], references: [id])
-  OrderToProduct OrderToProduct[]
+  orderToProduct OrderToProduct[]
   createdAt      DateTime         @default(now())
 }
 
