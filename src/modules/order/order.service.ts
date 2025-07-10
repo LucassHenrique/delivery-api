@@ -7,8 +7,8 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateOrderDto) {
-    const { userId, productIds } = data;
+  async create(userId: number, data: CreateOrderDto) {
+    const { productIds } = data;
 
     const userExists = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -44,9 +44,30 @@ export class OrderService {
 
   findAll() {
     return this.prisma.order.findMany({
-      include: {
-        user: true,
-        orderToProduct: { include: { product: true } },
+      select: {
+        id: true,
+        createdAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        orderToProduct: {
+          select: {
+            productId: true,
+            orderId: true,
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                description: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -54,24 +75,36 @@ export class OrderService {
   findOne(id: number) {
     return this.prisma.order.findUnique({
       where: { id },
-      include: {
-        user: true,
-        orderToProduct: { include: { product: true } },
+      select: {
+        id: true,
+        createdAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        orderToProduct: {
+          select: {
+            productId: true,
+            orderId: true,
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                description: true,
+              },
+            },
+          },
+        },
       },
     });
   }
 
   async update(id: number, data: UpdateOrderDto) {
-    const { userId, productIds } = data;
-
-    if (userId) {
-      const userExists = await this.prisma.user.findUnique({
-        where: { id: userId },
-      });
-      if (!userExists) {
-        throw new BadRequestException(`User with id ${userId} does not exist.`);
-      }
-    }
+    const { productIds } = data;
 
     if (productIds) {
       const products = await this.prisma.product.findMany({
@@ -85,7 +118,6 @@ export class OrderService {
     return this.prisma.order.update({
       where: { id },
       data: {
-        user: userId ? { connect: { id: userId } } : undefined,
         orderToProduct: productIds
           ? {
               deleteMany: {},

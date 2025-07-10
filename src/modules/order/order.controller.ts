@@ -12,6 +12,7 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @UseGuards(JwtAuthGuard)
 @Controller('order')
@@ -19,8 +20,12 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  @UseGuards(JwtAuthGuard)
+  create(
+    @CurrentUser() user: { id: number; email: string },
+    @Body() data: CreateOrderDto,
+  ) {
+    return this.orderService.create(user.id, data);
   }
 
   @Get()
