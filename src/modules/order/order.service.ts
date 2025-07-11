@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderStatus } from './dto/create-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -103,13 +104,46 @@ export class OrderService {
     });
   }
 
+  findByStatus(status: OrderStatus) {
+    return this.prisma.order.findMany({
+      where: { status },
+      select: {
+        id: true,
+        createdAt: true,
+        status: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        orderToProduct: {
+          select: {
+            productId: true,
+            orderId: true,
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                description: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   async update(id: number, data: UpdateOrderDto) {
-    const { productIds } = data;
+    const { productIds, status } = data;
 
     if (productIds) {
       const products = await this.prisma.product.findMany({
         where: { id: { in: productIds } },
       });
+
       if (products.length !== productIds.length) {
         throw new BadRequestException(`One or more products do not exist.`);
       }
@@ -118,15 +152,46 @@ export class OrderService {
     return this.prisma.order.update({
       where: { id },
       data: {
+        status: status || undefined,
         orderToProduct: productIds
           ? {
-              deleteMany: {},
+              deleteMany: {}, // remove os produtos antigos
               create: productIds.map((productId) => ({
                 product: { connect: { id: productId } },
               })),
             }
           : undefined,
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        orderToProduct: {
+          select: {
+            productId: true,
+            orderId: true,
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                description: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async updateStatus(id: number, status: OrderStatus) {
+    return this.prisma.order.update({
+      where: { id },
+      data: { status },
       include: {
         user: true,
         orderToProduct: { include: { product: true } },

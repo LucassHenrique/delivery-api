@@ -29,12 +29,20 @@ model Product {
   OrderToProduct OrderToProduct[]
 }
 
+enum OrderStatus {
+  PENDENTE
+  EM_PREPARACAO
+  ENTREGUE
+  CANCELADO
+}
+
 model Order {
   id             Int              @id @default(autoincrement())
   userId         Int
   user           User             @relation(fields: [userId], references: [id])
   orderToProduct OrderToProduct[]
   createdAt      DateTime         @default(now())
+  status         OrderStatus      @default(PENDENTE)
 }
 
 model OrderToProduct {
