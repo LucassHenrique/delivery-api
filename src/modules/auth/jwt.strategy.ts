@@ -10,12 +10,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
       secretOrKey: configService.get<string>('JWT_SECRET') as string,
     });
   }
 
-  async validate(payload: { sub: number; email: string }) {
-    return { id: payload.sub, email: payload.email };
+  async validate(payload: { sub: number; email: string; isAdmin: boolean }) {
+    return { id: payload.sub, email: payload.email, isAdmin: payload.isAdmin };
   }
 }

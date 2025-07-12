@@ -45,7 +45,7 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, isAdmin: user.isAdmin };
     const token = this.jwtService.sign(payload);
 
     return {
