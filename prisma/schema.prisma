@@ -43,6 +43,7 @@ model Order {
   orderToProduct OrderToProduct[]
   createdAt      DateTime         @default(now())
   status         OrderStatus      @default(PENDENTE)
+  address        String           @default("NÃO INFORMADO")
 }
 
 model OrderToProduct {

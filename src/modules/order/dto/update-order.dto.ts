@@ -7,4 +7,5 @@ export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   @IsOptional()
   @IsEnum(OrderStatus)
   status?: OrderStatus;
+  address?: string;
 }

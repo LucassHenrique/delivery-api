@@ -44,6 +44,7 @@ export class OrderService {
     const order = await this.prisma.order.create({
       data: {
         user: { connect: { id: userId } },
+        address: data.address,
         orderToProduct: {
           create: productIds.map((productId) => ({
             product: { connect: { id: productId } },
@@ -174,6 +175,7 @@ export class OrderService {
     return this.prisma.order.update({
       where: { id },
       data: {
+        address: data.address,
         status: status || undefined,
         orderToProduct: productIds
           ? {

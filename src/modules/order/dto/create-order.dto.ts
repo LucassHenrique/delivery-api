@@ -4,6 +4,7 @@ import {
   ArrayUnique,
   IsOptional,
   IsEnum,
+  IsString,
 } from 'class-validator';
 
 export enum OrderStatus {
@@ -22,4 +23,8 @@ export class CreateOrderDto {
   @IsOptional()
   @IsEnum(OrderStatus)
   status?: OrderStatus;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
 }
