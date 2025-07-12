@@ -3,10 +3,26 @@ import { PrismaService } from 'src/config/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderStatus } from './dto/create-order.dto';
+import { MessagingService } from '../messaging/messaging.service';
 
 @Injectable()
 export class OrderService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private messagingService: MessagingService,
+  ) {
+    this.messagingService.subscribe('pedido_criado', (data) => {
+      console.log('📦 Pedido criado recebido no OrderService:', data);
+    });
+
+    this.messagingService.subscribe('status_alterado', (data) => {
+      console.log('🔄 Status alterado:', data);
+    });
+
+    this.messagingService.subscribe('pedido_cancelado', (data) => {
+      console.log('❌ Pedido cancelado:', data);
+    });
+  }
 
   async create(userId: number, data: CreateOrderDto) {
     const { productIds } = data;
@@ -38,6 +54,12 @@ export class OrderService {
         user: true,
         orderToProduct: { include: { product: true } },
       },
+    });
+
+    await this.messagingService.publish('pedido_criado', {
+      pedidoId: order.id,
+      userId: userId,
+      status: order.status,
     });
 
     return order;
@@ -189,14 +211,26 @@ export class OrderService {
   }
 
   async updateStatus(id: number, status: OrderStatus) {
-    return this.prisma.order.update({
+    const updated = await this.prisma.order.update({
       where: { id },
       data: { status },
-      include: {
-        user: true,
-        orderToProduct: { include: { product: true } },
-      },
     });
+
+    if (status === OrderStatus.CANCELADO) {
+      await this.messagingService.publish('pedido_cancelado', {
+        pedidoId: updated.id,
+        userId: updated.userId,
+        status: updated.status,
+      });
+    } else {
+      await this.messagingService.publish('status_alterado', {
+        pedidoId: updated.id,
+        userId: updated.userId,
+        status: updated.status,
+      });
+    }
+
+    return updated;
   }
 
   remove(id: number) {
