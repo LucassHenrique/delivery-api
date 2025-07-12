@@ -1,98 +1,126 @@
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+# delivery-api
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+API backend para uma plataforma de delivery, construída com [NestJS](https://nestjs.com/) e [Prisma ORM](https://www.prisma.io/).  
+Fornece endpoints para autenticação JWT, gerenciamento de usuários, produtos, pedidos, controle de status e mensageria com Redis.
 
-## Project setup
+---
 
+## Funcionalidades principais
+
+- Registro e login de usuários com JWT (autenticação e autorização)
+- CRUD de produtos com controle de acesso via permissões administrativas
+- Gerenciamento completo de pedidos: criação, atualização, status e associação de endereços
+- Mensageria interna com Redis Pub/Sub para eventos de pedidos (ex: pedido criado, status alterado)
+- Armazenamento de endereços de entrega associados a pedidos
+
+---
+
+## Tecnologias
+
+- [NestJS](https://nestjs.com/) - framework Node.js para backend escalável
+- [Prisma ORM](https://www.prisma.io/) - ORM para banco de dados MySQL
+- [Redis](https://redis.io/) - sistema de mensageria via Pub/Sub
+- [JWT](https://jwt.io/) - autenticação via tokens JSON Web Token
+- TypeScript, class-validator e outras libs
+
+---
+
+## Requisitos
+
+- Node.js >= 16
+- MySQL rodando (com o schema configurado via Prisma)
+- Redis rodando (localmente ou via container Docker)
+
+---
+
+## Setup e execução
+
+1. Clone o repositório  
 ```bash
-$ npm install
+git clone https://github.com/LucassHenrique/delivery-api.git
+cd delivery-api
 ```
 
-## Compile and run the project
-
+2. Instale as dependências  
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+3. Configure as variáveis de ambiente  
+Crie um arquivo `.env` com as variáveis necessárias, exemplo:  
+```env
+DATABASE_URL="mysql://user:password@localhost:3306/dbname"
+JWT_SECRET="sua_chave_secreta"
+REDIS_URL="redis://localhost:6379"
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+4. Rode as migrations do Prisma para criar as tabelas no banco  
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma migrate dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+5. Inicie o servidor (modo desenvolvimento)  
+```bash
+npm run start:dev
+```
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## Endpoints principais
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- `POST /auth/signup` — cadastro de usuários
+- `POST /auth/login` — login e obtenção do token JWT
+- `POST /order` — criação de pedidos (autenticado)
+- `GET /order` — listagem de pedidos (autenticado)
+- `PATCH /order/:id/status` — atualizar status do pedido (autenticado)
+- `POST /product` — criação de produtos (somente admin)
+- `GET /order/status?status=PENDENTE` — filtrar pedidos por status
+- entre outros
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Testes
 
-## Stay in touch
+Rode os testes unitários e e2e com os comandos:  
+```bash
+npm run test
+npm run test:e2e
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## Contribuição
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Pull requests são bem-vindos!  
+Por favor, abra issues para sugestões ou bugs.
+
+---
+
+## Licença
+
+MIT License — veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+---
+
+## Contato
+
+- GitHub: [https://github.com/LucassHenrique](https://github.com/LucassHenrique)  
+- LinkedIn: (https://www.linkedin.com/in/lucas-henrique-19630427b/)
+
+---
+
+## Recursos úteis
+
+- [NestJS Documentation](https://docs.nestjs.com)
+- [Prisma Documentation](https://www.prisma.io/docs/)
+- [Redis Documentation](https://redis.io/documentation)
+- [JWT Introduction](https://jwt.io/introduction/)
